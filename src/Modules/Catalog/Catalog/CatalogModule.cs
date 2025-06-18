@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Data;
 
 namespace Catalog
 {
@@ -31,18 +32,15 @@ namespace Catalog
         {
             // Configure HTTP Request Pipeline
 
-            InitializeDatabaseAsync(app).GetAwaiter().GetResult();
+            // 1. Use Api Endpoint services
+
+            // 2. Use Application Use Case Services
+
+            // 3. Use Data - Infraestructure services
+            app.UseMigration<CatalogDbContext>();
 
             return app;
         }
-
-        private static async Task InitializeDatabaseAsync(IApplicationBuilder app)
-        {
-            using var scope = app.ApplicationServices.CreateScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-
-            await context.Database.MigrateAsync();
-        }
+               
     }
 }
