@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Data;
 
 namespace Catalog
 {
@@ -25,6 +24,9 @@ namespace Catalog
             {
                 options.UseNpgsql(connectionString);
             });
+
+            services.AddScoped<IDataSeeder, CatalogDataSeeder>();
+
             return services;
         }
 
