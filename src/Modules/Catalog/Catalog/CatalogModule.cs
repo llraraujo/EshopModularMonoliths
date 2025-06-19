@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using MediatR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Data.Interceptors;
@@ -11,19 +13,27 @@ namespace Catalog
             IConfiguration configuration)
         {
 
-            // Add services to the container
+            // Add services to the container         
 
             // API Endpoint Services
 
             // Application Use Case Services
+            services.AddMediatR(config =>
+            {
+                config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            });
 
             // Data - Infraestructure services
             string connectionString = configuration.GetConnectionString("Database")
                         ?? throw new Exception("Cannot find 'Database' connectionString");
 
-            services.AddDbContext<CatalogDbContext>((options) =>
+            services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+            services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+           
+
+            services.AddDbContext<CatalogDbContext>((sp, options) =>
             {
-                options.AddInterceptors(new AuditableEntityInterceptor());
+                options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
                 options.UseNpgsql(connectionString);
             });
 

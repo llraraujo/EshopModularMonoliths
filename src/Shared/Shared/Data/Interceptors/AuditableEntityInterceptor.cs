@@ -7,6 +7,7 @@ namespace Shared.Data.Interceptors
 {
     public class AuditableEntityInterceptor: SaveChangesInterceptor
     {
+        // SavingChanges and SavingChangesAsync allow to interact with the entities just before commiting the changes on the database
         public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
         {
             UpdateEntities(eventData.Context);
